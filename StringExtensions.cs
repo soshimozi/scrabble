@@ -9,15 +9,12 @@ namespace ConsoleApplication2
             return index != -1 ? str.Remove(index, 1) : str;
         }
 
-        public static HashSet<string> Prefixes(this string word)
+        public static IEnumerable<string> Prefixes(this string word)
         {
-            var result = new HashSet<string>();
             for (var i = 0; i < word.Length; i++)
             {
-                result.Add(word.Substring(0, i));
+                yield return word.Substring(0, i);
             }
-
-            return result;
         }
    
     }

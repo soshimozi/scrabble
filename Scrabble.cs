@@ -9,16 +9,19 @@ namespace ConsoleApplication2
 {
     public class Scrabble
     {
-        private readonly Tuple<int, int> _across = new Tuple<int, int>(1, 0);
-        private readonly Tuple<int, int> _down = new Tuple<int, int>(0, 1);
+        private readonly int[] _across = new int[2] { 1, 0 };
+        private readonly int[] _down = new int[2] { 0, 1 };
 
-        private HashSet<string> _words, _prefixes;
+        private IEnumerable<string> _words, _prefixes;
 
-        private readonly List<string> _letters =
-            new List<string>("A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z".Split(",".ToCharArray()));
+
+        private readonly List<string> _letters = Enumerable.Range('A', 'Z' - 'A' + 1).Select(i => new string((Char)i, 1)).ToList();
+
+        //private readonly List<string> _letters =
+        //    new List<string>("A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z".Split(",".ToCharArray()));
 
         // anchor that can be any letter
-        private readonly Anchor _any;
+        //private readonly IEnumerable<string> _any;
 
         private readonly Dictionary<char, int> _points = new Dictionary<char, int>()
                                                              {
@@ -51,19 +54,19 @@ namespace ConsoleApplication2
                                                                  {'_', 0}
                                                              };
 
-        public Scrabble(HashSet<string> words, HashSet<string> prefixes)
+        public Scrabble(IEnumerable<string> words, IEnumerable<string> prefixes)
         {
-            _any = new Anchor(_letters);
-            _words = words;
-            _prefixes = prefixes;
+            //_any = new IEnumerable(_letters);
+            _words = new List<string>(words);
+            _prefixes = new List<string>(prefixes);
         }
 
-        protected void Initialize()
-        {
-            var prefixAndWords = ReadWordList("words4k.txt");
-            _words = prefixAndWords.Item1;
-            _prefixes = prefixAndWords.Item2;
-        }
+        //protected void Initialize()
+        //{
+        //    var prefixAndWords = ReadWordList("words4k.txt");
+        //    _words = prefixAndWords.Item1;
+        //    _prefixes = prefixAndWords.Item2;
+        //}
 
         public HashSet<string> FindWords(string letters, string prefix = "", HashSet<string> results = null)
         {
@@ -82,9 +85,9 @@ namespace ConsoleApplication2
             return results;
         }
 
-        public HashSet<string> WordPlays(string hand, string boardLetters)
+        public List<string> WordPlays(string hand, string boardLetters)
         {
-            var results = new HashSet<string>();
+            var results = new List<string>();
             foreach (var pre in FindPrefixes(hand))
             {
                 foreach (var l in boardLetters)
@@ -146,12 +149,12 @@ namespace ConsoleApplication2
             return results;
         }
 
-        public IList<List<Letter>> Transpose(IList<List<Letter>> matrix)
+        public IList<List<Word>> Transpose(IList<List<Word>> matrix)
         {
-            var map = new List<List<Letter>>();
+            var map = new List<List<Word>>();
             for (var col = 0; col < matrix[0].Count; col++ )
             {
-                map.Add(new List<Letter>());
+                map.Add(new List<Word>());
             }
 
                 //map.Add(new List<Letter>());
@@ -166,44 +169,18 @@ namespace ConsoleApplication2
             return map;
         }
 
-        public bool IsLetter(Letter sq)
+        public bool IsWord(Word sq)
         {
             return _letters.Contains(sq.Value);
         }
 
-        public bool IsEmpty(Letter sq)
+        public bool IsSquareEmpty(Word sq)
         {
             //"Is this an empty square (no letters, but a valid position on board)."
             return sq.Value == "." || sq.Value == "*" || sq.IsAnchor;
         }
 
-//        public HashSet<string> Prefixes(string word)
-//        {
-        //    return word.Prefixes;
-        //    var result = new HashSet<string>();
-        //    for (var i = 0; i < word.Length; i++)
-        //    {
-        //        result.Add(word.Substring(0, i));
-        //    }
-
-        //    return result;
-//        }
-
-        public Tuple<HashSet<string>, HashSet<string>> ReadWordList(string filename)
-        {
-            var wordset =
-                new HashSet<string>(
-                    new StreamReader(File.OpenRead("words4k.txt")).ReadToEnd().ToUpper().Split("\r\n".ToCharArray()).
-                        Where(s => !string.IsNullOrEmpty(s)));
-
-            var prefixes = wordset.SelectMany((w) => { return w.Prefixes(); });
-
-            var prefixset = new HashSet<string>();
-            return new Tuple<HashSet<string>, HashSet<string>>(wordset, prefixset);
-        }
-
-
-        public HashSet<string> AddSuffixesOld(string hand, string pre, HashSet<string> results)
+        private List<string> AddSuffixesOld(string hand, string pre, List<string> results)
         {
             //"""Return the set of words that can be formed by extending pre with letters
             //in hand."""
@@ -224,13 +201,13 @@ namespace ConsoleApplication2
             return hand.Sum(l => _points[l]);
         }
 
-        public HashSet<string> TopN(string hand, string boardLetters, int n = 10)
+        public List<string> TopN(string hand, string boardLetters, int n = 10)
         {
             var localwords = WordPlays(hand, boardLetters);
-            return new HashSet<string>(localwords.OrderByDescending(WordScore).Take(n));
+            return new List<string>(localwords.OrderByDescending(WordScore).Take(n));
         }
 
-        public void SetAnchors(List<Letter> row, int rowIndex, List<List<Letter>> board)
+        public void SetAnchors(List<Word> row, int rowIndex, Board board)
         {
             // anchors are empty squares with a neighboring letter.  Some are restricted
             // by cross-words to be only a subset of letters.
@@ -238,95 +215,90 @@ namespace ConsoleApplication2
             {
                 var neighborListTuple = Neighbors(board, colIndex, rowIndex);
                 var neighborList =
-                    new List<Letter>(new []
+                    new List<Word>(new []
                                          {
-                                             neighborListTuple.Item1, neighborListTuple.Item2, neighborListTuple.Item3,
-                                             neighborListTuple.Item4
+                                             neighborListTuple[0], neighborListTuple[1], neighborListTuple[2],
+                                             neighborListTuple[3]
                                          });
 
-                if (row[colIndex].Value != "*" && (!IsEmpty(row[colIndex]) || !neighborList.Any(IsLetter))) continue;
-                if(IsLetter(neighborListTuple.Item1) || IsLetter(neighborListTuple.Item2))
+                if (row[colIndex].Value != "*" && (!IsSquareEmpty(row[colIndex]) || !neighborList.Any(IsWord))) continue;
+                if(IsWord(neighborListTuple[0]) || IsWord(neighborListTuple[1]))
                 {
                     // crossword
                     var crossword = FindCrossword(board, colIndex, rowIndex);
-                    row[colIndex] = new Letter(new Anchor(_letters.Where(l => _words.Contains(crossword.Item2.Replace(".", l)))));
+                    row[colIndex] = new Word(_letters.Where(l => _words.Contains(crossword.Value.Replace(".", l))));
                 }
                 else
                 {
-                    row[colIndex] = new Letter(_any);
+                    row[colIndex] = new Word(_letters);
                 }
             }
 
         }
 
-        public Tuple<int, string> FindCrossword(IList<List<Letter>> board, int colIndex, int rowIndex)
+        public Word FindCrossword(Board board, int row, int col)
         {
-            var sq = board[rowIndex][colIndex];
+            var foundRow = -1;
+            return FindCrossword(board, row, col, ref foundRow);
+        }
 
-            var w = IsLetter(sq) ? sq : new Letter(".");
+        public Word FindCrossword(Board board, int row, int col, ref int foundRow)
+        {
+            var sq = board[row][col];
 
-            var j2 = rowIndex;
+            var w = IsWord(sq) ? sq : new Word(".");
+
+            var j2 = row;
             for(; j2 >= 0; j2--)
             {
-                var sq2 = board[j2 - 1][colIndex];
-                if (IsLetter(sq2))
-                    w = new Letter(sq2.Value + w.Value);
+                var sq2 = board[j2 - 1][col];
+                if (IsWord(sq2))
+                    w = new Word(sq2.Value + w.Value);
                 else
                     break;
             }
 
-            for(var j3 = rowIndex+1; j3 < board.Count; j3++)
+            for(var j3 = row + 1; j3 < board.RowCount; j3++)
             {
-                var sq3 = board[j3][colIndex];
-                if (IsLetter(sq3))
-                    w = new Letter(w.Value + sq3.Value);
+                var sq3 = board[j3][col];
+                if (IsWord(sq3))
+                    w = new Word(w.Value + sq3.Value);
                 else
                     break;
             }
 
-            return new Tuple<int, string>(j2, w.Value);
+            foundRow = j2;
+            return w;
 
         }
 
-        public Tuple<Letter, Letter, Letter, Letter> Neighbors(List<List<Letter>> board, int col, int row)
+        public Word[] Neighbors(Board board, int col, int row)
         {
-            return new Tuple<Letter, Letter, Letter, Letter>(board[row - 1][col], board[row + 1][col],
-                                                             board[row][col + 1], board[row][col - 1]);
+            return new Word[4] { board[row - 1][col], board[row + 1][col], board[row][col + 1], board[row][col - 1] };
         }
 
 
     }
 
-    public class Letter
+    public class Board
     {
-        public Letter(Anchor anchor)
+        private List<List<Word>> _letters = new List<List<Word>>();
+
+        public int RowCount
         {
-            Anchor = anchor;
-            Value = null;
+            get { return _letters.Count; }
         }
 
-        public Letter(String value)
+        public Word GetAt(int row, int col)
         {
-            Anchor = null;
-            Value = value;
+            return _letters[row][col];
         }
 
-        public bool IsAnchor
+        public Word[] this[int rowIndex]
         {
-            get { return Anchor != null;  }
-        }
-
-        public Anchor Anchor { get; private set; }
-
-        public string Value { get; private set; }
-
-    }
-
-    public class Anchor : HashSet<string>
-    {
-        public Anchor(IEnumerable<string> data) : base(data)
-        {
+            get { return _letters[rowIndex].ToArray(); }
         }
     }
+
 
 }

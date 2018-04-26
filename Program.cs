@@ -53,13 +53,33 @@ namespace ConsoleApplication2
             // test out prefixes
             //var result = Prefixes("WORD");
 
+            //    var prefixAndWords = ReadWordList("words4k.txt");
+            //    _words = prefixAndWords.Item1;
+            //    _prefixes = prefixAndWords.Item2;
+
+
             var p = new Program();
             p.Run(args);
         }
 
         public void Run(string[] args)
         {
-            
+            var wordset =
+                new List<string>(
+                    new StreamReader(File.OpenRead("words4k.txt")).ReadToEnd().ToUpper().Split("\r\n".ToCharArray()).
+                        Where(s => !string.IsNullOrEmpty(s)));
+
+            var prefixes = wordset.SelectMany((w) => 
+            {
+                return w.Prefixes();
+            });
+
+            var scrabble = new Scrabble(wordset, prefixes);
+
+            var test = scrabble.FindWords("AQZOOP");
+
+            var top = scrabble.TopN("AQZOOP", "", 2);
+
         }
 
     //    public void Initialize()
