@@ -7,54 +7,21 @@ namespace Scrabble
 {
     class Dictionary
     {
-        private List<string> _words = new List<string>();
-        private DefaultDictionary<string, List<string>> letters_map = new DefaultDictionary<string, List<string>>();
-        private DefaultDictionary<string, List<string>> letters_map_one_blank = new DefaultDictionary<string, List<string>>();
-        private DefaultDictionary<string, List<string>> letters_map_two_blanks = new DefaultDictionary<string, List<string>>();
-        private HashSet<string> word_set = new HashSet<string>();
+        private readonly List<string> _words = new List<string>();
+        public readonly DefaultDictionary<string, List<string>> LettersMap = new DefaultDictionary<string, List<string>>();
+        public readonly DefaultDictionary<string, List<string>> LettersMapOneBlank = new DefaultDictionary<string, List<string>>();
+        public readonly DefaultDictionary<string, List<string>> LettersMapTwoBlanks = new DefaultDictionary<string, List<string>>();
+
+        private readonly HashSet<string> _wordSet = new HashSet<string>();
 
         public Dictionary()
         {
 
         }
 
-        private void SetWords(string[] words)
+        public bool HasWord(string word)
         {
-            _words.AddRange(words);
-            GenerateLetterMaps();
-        }
-
-        private void GenerateLetterMaps()
-        {
-            var word_count = _words.Count;
-            var last_percent = 0;
-            var i = 0;
-
-            foreach(var word in _words)
-            {
-                var letters = new string(word.Distinct().Select(c => Char.ToUpper(c)).ToArray());
-                letters_map[letters].Add(word);
-
-                foreach(var subword in letters.RemoveOneLetter())
-                {
-                    letters_map_one_blank[subword].Add(word);
-                }
-
-                foreach(var subword in letters.RemoveTwoLetters())
-                {
-                    letters_map_two_blanks[subword].Add(word);
-                }
-
-                //# Show progress information.
-                var percent = (int)(i * 100 / word_count);
-                if (percent / 10 != last_percent / 10)
-                {
-                    Console.WriteLine($"    {percent}%");
-                    last_percent = percent;
-                }
-
-                i++;
-            }
+            return _wordSet.Contains(word);
         }
 
         public static Dictionary Load(string filename)
@@ -70,6 +37,45 @@ namespace Scrabble
             dictionary.SetWords(words);
 
             return dictionary;
+        }
+
+        private void SetWords(string[] words)
+        {
+            _words.AddRange(words);
+            GenerateLetterMaps();
+        }
+
+        private void GenerateLetterMaps()
+        {
+            var word_count = _words.Count;
+            var last_percent = 0;
+            var i = 0;
+
+            foreach (var word in _words)
+            {
+                var letters = new string(word.Distinct().Select(c => Char.ToUpper(c)).ToArray());
+                LettersMap[letters].Add(word);
+
+                foreach (var subword in letters.RemoveOneLetter())
+                {
+                    LettersMapOneBlank[subword].Add(word);
+                }
+
+                foreach (var subword in letters.RemoveTwoLetters())
+                {
+                    LettersMapTwoBlanks[subword].Add(word);
+                }
+
+                //# Show progress information.
+                var percent = (int)(i * 100 / word_count);
+                if (percent / 10 != last_percent / 10)
+                {
+                    Console.WriteLine($"    {percent}%");
+                    last_percent = percent;
+                }
+
+                i++;
+            }
         }
 
         private string[] RemoveUnsuitableWords(string[] words, int size)
