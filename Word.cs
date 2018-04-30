@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace ConsoleApplication2
+namespace Scrabble
 {
     public class Word
     {

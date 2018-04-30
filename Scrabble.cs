@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace ConsoleApplication2
+namespace Scrabble
 {
     public class Scrabble
     {

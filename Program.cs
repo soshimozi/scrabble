@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace ConsoleApplication2
+namespace Scrabble
 {
     internal class Program
     {
@@ -44,22 +44,67 @@ namespace ConsoleApplication2
 
         private static void Main(string[] args)
         {
-            //words = new HashSet<string>(new StreamReader(File.OpenRead("words4k.txt")).ReadToEnd().ToUpper().Split("\r\n".ToCharArray()).Where(s => !string.IsNullOrEmpty(s)));
+            //var p = new Program();
+            //p.Run(args);
 
-            //var prefixAndWords = ReadWordList("words4k.txt");
-            //words = prefixAndWords.Item1;
-            //prefixes = prefixAndWords.Item2;
-
-            // test out prefixes
-            //var result = Prefixes("WORD");
-
-            //    var prefixAndWords = ReadWordList("words4k.txt");
-            //    _words = prefixAndWords.Item1;
-            //    _prefixes = prefixAndWords.Item2;
+            //var defaultDict = new Scrabble.DefaultDictionary<string, List<string>>();
+            var d = new DefaultDictionary<string, List<string>>();
 
 
-            var p = new Program();
-            p.Run(args);
+            d["something"].Add("Hello");
+
+            var list = d["something"];
+
+            var distinct = "hello".ToArray().Distinct().Select(c => Char.ToUpper(c)).ToArray();
+            Array.Sort(distinct);
+
+
+            var str = new string(distinct);
+
+            var dictionary = Dictionary.Load("dictionary.txt");
+
+            //var substr = str.Substring(0, )
+
+            //for (int i = 0; i < str.Length; i++)
+            //{
+            //    Console.WriteLine($"{string.Concat(str.Substring(0, i), str.Substring(i + 1))}");
+            //}
+
+            //foreach (var subword in str.RemoveOneLetter())
+            //{
+            //    Console.WriteLine($"{subword}");
+            //}
+
+            foreach (var subword in str.RemoveTwoLetters())
+            {
+                Console.WriteLine($"{subword}");
+            }
+
+            //for (int i = 0; i < str.Length - 1; i++)
+            //{
+            //    var first_part = str.Substring(0, i);
+
+            //    for (int j = i + 1; j < str.Length; j++)
+            //    {
+            //        var secondPart = str.Substring(i + 1, j - i - 1);
+            //        var thirdPart = str.Substring(j + 1);
+
+            //        Console.WriteLine($"{first_part + secondPart + thirdPart}");
+            //    }
+            //}
+
+            //foreach (var word in list[0].RemoveOneLetter())
+            //{
+            //    Console.WriteLine($"{word}");
+            //}
+
+            //Console.WriteLine("===========================");
+
+            //foreach (var word in list[0].RemoveTwoLetters())
+            //{
+            //    Console.WriteLine($"{word}");
+            //}
+
         }
 
         public void Run(string[] args)
