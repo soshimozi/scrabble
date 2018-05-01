@@ -251,6 +251,69 @@ namespace Scrabble
             }
         }
 
+
+        /// <summary>
+        /// Start at row,col and go in direction and its opposite until we run off the
+        /// board or find the last continuous tile.Returns(row, col, length) where length
+        /// is the number of letters.
+        /// </summary>
+        /// <param name="row"></param>
+        /// <param name="col"></param>
+        /// <param name="direction"></param>
+        /// <returns></returns>
+        public Edge FindEdges(int row, int col, Direction direction)
+        {
+            // Find start.
+            while (true)
+            {
+                //# Move in reverse until we go too far.
+                var position = direction.Decrement(row, col);
+                row = position.Row;
+                col = position.Col;
+
+                // see if we went too far
+                if( row < 0 || row >= SIZE || col < 0 || col >= SIZE || _cells[GetIndex(row, col)] != NONE)
+                {
+                    // back up one
+                    position = direction.Increment(row, col);
+                    row = position.Row;
+                    col = position.Col;
+                    break;
+                }
+            }
+        }
+        /*
+         
+
+            # See if we went too far.
+            if row < 0 or row >= self.SIZE \
+                    or col < 0 or col >= self.SIZE \
+                    or not self.cells[self.get_index(row, col)]:
+
+                # Back up one.
+                row, col = direction.increment(row, col)
+                break
+        else:
+            # Can't get here.
+            raise BoardError()
+
+        
+        # Go forward until we've gone too far.
+        for length in range(1, self.SIZE + 1):
+            end_row, end_col = direction.increment(row, col, length)
+
+            # See if we've gone too far.
+            if end_row < 0 or end_row >= self.SIZE \
+                    or end_col < 0 or end_col >= self.SIZE \
+                    or not self.cells[self.get_index(end_row, end_col)]:
+
+                return (row, col, length)
+
+        # Can't get here.
+        raise BoardError()         
+            
+         */
+
         public class Square
         {
             public int WordIndex { get; set; }
@@ -259,6 +322,14 @@ namespace Scrabble
             public int Index { get; set; }
             public char Letter { get; set; }
             public bool IsBlank { get; set; }
+        }
+
+        public class Edge
+        {
+            public int Row { get; set; }
+            public int Col { get; set; }
+            public int Length { get; set; }
+
         }
 
     }
