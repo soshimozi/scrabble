@@ -52,5 +52,45 @@ def generate_rack(rack, bag):
      */
     class Bag
     {
+        public const string BLANK = "?";
+
+        const string LETTERS = "AAAAAAAAAB" +
+                               "BCCDDDDEEE" +
+                               "EEEEEEEEEF" +
+                               "FGGGHHIIII" +
+                               "IIIIIJKLLL" +
+                               "LMMNNNNNNO" +
+                               "OOOOOOOPPQ" +
+                               "RRRRRRSSSS" +
+                               "TTTTTTUUUU" +
+                               "VVWWXYYZ??";
+
+        public static List<char> GetFullBag()
+        {
+            return LETTERS.ToList();
+        }
+
+        /// <summary>
+        /// Given an existing rack (string) and a bag (list of letters), returns a new
+        /// rack with a full 7 letters.The bag is modified in-place to remove the letters.
+        /// </summary>
+        /// <param name="rack"></param>
+        /// <param name="bag"></param>
+        /// <returns></returns>
+        public static string GenerateRack(string rack, List<char> bag)
+        {
+            var builder = new StringBuilder();
+            builder.Append(rack);
+
+            bag.Shuffle();
+            var needed = 7 - rack.Count();
+
+            var str = bag.Take(needed);
+            builder.Append(str.ToArray());
+
+            bag.RemoveRange(0, needed);
+
+            return builder.ToString();
+        }
     }
 }

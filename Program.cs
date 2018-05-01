@@ -4,6 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace Scrabble
 {
@@ -48,20 +49,20 @@ namespace Scrabble
             //p.Run(args);
 
             //var defaultDict = new Scrabble.DefaultDictionary<string, List<string>>();
-            var d = new DefaultDictionary<string, List<string>>();
+            //var d = new DefaultDictionary<string, List<string>>();
 
 
-            d["something"].Add("Hello");
+            //d["something"].Add("Hello");
 
-            var list = d["something"];
+            //var list = d["something"];
 
-            var distinct = "hello".ToArray().Distinct().Select(c => Char.ToUpper(c)).ToArray();
-            Array.Sort(distinct);
+            //var distinct = "hello".ToArray().Distinct().Select(c => Char.ToUpper(c)).ToArray();
+            //Array.Sort(distinct);
 
 
-            var str = new string(distinct);
+            //var str = new string(distinct);
 
-            var dictionary = Dictionary.Load("dictionary.txt");
+            //var dictionary = Dictionary.Load("dictionary.txt");
 
             //var substr = str.Substring(0, )
 
@@ -75,10 +76,23 @@ namespace Scrabble
             //    Console.WriteLine($"{subword}");
             //}
 
-            foreach (var subword in str.RemoveTwoLetters())
-            {
-                Console.WriteLine($"{subword}");
-            }
+            //foreach (var subword in str.RemoveTwoLetters())
+            //{
+            //    Console.WriteLine($"{subword}");
+            //}
+
+            var fullBag = Bag.GetFullBag();
+
+            var rack = Bag.GenerateRack("", fullBag);
+
+            Console.WriteLine($"new bag: {rack}");
+
+            var regex = new Regex(@"\s");
+            var match = regex.Replace(Board.PREMIUM_CELLS, "");
+
+            var board = new Board();
+
+            var addedIndices = board.AddWord("HELLO", 2, 7, Direction.VERTICAL);
 
             //for (int i = 0; i < str.Length - 1; i++)
             //{

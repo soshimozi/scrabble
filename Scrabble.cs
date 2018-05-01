@@ -207,7 +207,7 @@ namespace Scrabble
             return new List<string>(localwords.OrderByDescending(WordScore).Take(n));
         }
 
-        public void SetAnchors(List<Word> row, int rowIndex, Board board)
+        public void SetAnchors(List<Word> row, int rowIndex, ScrabbleBoard board)
         {
             // anchors are empty squares with a neighboring letter.  Some are restricted
             // by cross-words to be only a subset of letters.
@@ -236,13 +236,13 @@ namespace Scrabble
 
         }
 
-        public Word FindCrossword(Board board, int row, int col)
+        public Word FindCrossword(ScrabbleBoard board, int row, int col)
         {
             var foundRow = -1;
             return FindCrossword(board, row, col, ref foundRow);
         }
 
-        public Word FindCrossword(Board board, int row, int col, ref int foundRow)
+        public Word FindCrossword(ScrabbleBoard board, int row, int col, ref int foundRow)
         {
             var sq = board[row][col];
 
@@ -272,7 +272,7 @@ namespace Scrabble
 
         }
 
-        public Word[] Neighbors(Board board, int col, int row)
+        public Word[] Neighbors(ScrabbleBoard board, int col, int row)
         {
             return new Word[4] { board[row - 1][col], board[row + 1][col], board[row][col + 1], board[row][col - 1] };
         }
@@ -280,7 +280,7 @@ namespace Scrabble
 
     }
 
-    public class Board
+    public class ScrabbleBoard
     {
         private List<List<Word>> _letters = new List<List<Word>>();
 

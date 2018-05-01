@@ -44,14 +44,22 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Bag.cs" />
-    <Compile Include="CollectionExtensions.cs" />
+    <Compile Include="Board.cs" />
+    <Compile Include="BoardException.cs" />
+    <Compile Include="DefaultDictionary.cs" />
     <Compile Include="Dictionary.cs" />
     <Compile Include="Direction.cs" />
+    <Compile Include="InvalidPremiumError.cs" />
+    <Compile Include="ListExtensions.cs" />
+    <Compile Include="MismatchLetterError.cs" />
+    <Compile Include="OutsideError.cs" />
     <Compile Include="Position.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Scrabble.cs" />
     <Compile Include="StringExtensions.cs" />
+    <Compile Include="ThreadSafeRandom.cs" />
+    <Compile Include="TooManyBlanksError.cs" />
     <Compile Include="Word.cs" />
   </ItemGroup>
   <ItemGroup>
